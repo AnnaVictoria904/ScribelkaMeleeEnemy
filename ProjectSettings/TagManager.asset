@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Ground
+  - Fireball
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - Ground
+  - Wall
+  - Player
+  - Fireball
+  - Background
+  - Enemy
+  - EnemyCollision
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Background
+    uniqueID: 1619080553
+    locked: 0
+  - name: Wall
+    uniqueID: 1807585251
+    locked: 0
+  - name: Roof
+    uniqueID: 1270187627
+    locked: 0
+  - name: Ground
+    uniqueID: 988488447
+    locked: 0
+  - name: Checkpoint
+    uniqueID: 3164872977
+    locked: 0
+  - name: Player
+    uniqueID: 3575997351
+    locked: 0

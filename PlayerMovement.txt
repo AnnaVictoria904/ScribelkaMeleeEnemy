@@ -1,0 +1,117 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class PlayerMovement : MonoBehaviour
+{
+    private Rigidbody2D rb;
+    [SerializeField] private float speed;
+    [SerializeField] private float jumpForce;
+    private Animator animator;
+    private BoxCollider2D coll;
+    [SerializeField] private LayerMask jumpableGround;
+    [SerializeField] private LayerMask wallLayer;
+    private float wallJumpCooldown;
+    int doubleJump = 2;
+    public float axisH;
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody2D>();
+        if (rb == null)
+        {
+            Debug.LogError("PlayerMovement without Rigidbody2D");
+        }
+        animator = GetComponent<Animator>();
+        if (animator == null)
+        {
+            Debug.LogError("PlayerMovement without Animator");
+        }
+        coll = GetComponent<BoxCollider2D>();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        axisH = Input.GetAxis("Horizontal");
+        rb.velocity = new Vector2 (axisH * speed, rb.velocity.y);
+
+        if (axisH > 0)
+        {
+            transform.localScale = Vector3.one;
+            animator.SetBool("running", true);
+        }
+
+        else if (axisH < 0)
+        {
+            transform.localScale = new Vector3(-1, 1, 1);
+            animator.SetBool("running", true);
+        }
+
+        else
+        {
+            animator.SetBool("running", false);
+        }
+
+        //Wall jump logic
+        if (wallJumpCooldown > 0.2f)
+        {
+            rb.velocity = new Vector2(axisH * speed, rb.velocity.y);
+
+            if (onWall() && !IsGrounded())
+            {
+                rb.gravityScale = 0;
+                rb.velocity = Vector2.zero;
+            }
+            else
+            {
+                rb.gravityScale = 7;
+            }
+
+            if (Input.GetKey(KeyCode.Space) && doubleJump < 2)
+            {
+                if (IsGrounded())
+                {
+                    doubleJump++;
+                    rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+                    animator.SetBool("jumped", true);
+                }
+                else if (onWall() && IsGrounded()) 
+                {
+                    if (axisH == 0)
+                    {
+                        rb.velocity = new Vector2(-Mathf.Sign(transform.localScale.x) * 10, 0);
+                        transform.localScale = new Vector3(-Mathf.Sign(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+                    }
+                    else
+                    {
+                        rb.velocity = new Vector2(-Mathf.Sign(transform.localScale.x) * 3, 6);
+                    }
+                    wallJumpCooldown = 0;
+                }
+            }
+        }
+
+        else
+        {
+            wallJumpCooldown += Time.deltaTime;
+        }
+    }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            animator.SetBool("jumped", false);
+            doubleJump = 0;
+        }
+    }
+
+    private bool IsGrounded()
+    {
+        return Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0f, Vector2.down, .1f, jumpableGround);
+    }
+    private bool onWall()
+    {
+        RaycastHit2D raycastHit = Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0, new Vector2(transform.localScale.x, 0), 0.1f, wallLayer);
+        return raycastHit.collider != null;
+    }
+}
